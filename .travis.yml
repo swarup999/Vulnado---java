@@ -40,6 +40,7 @@ jobs:
           fi
 
           VULNS_TABLE=$(echo "$RESPONSE" | jq -r '.vulnsTable // "No vulnerabilities found"')
+          echo "$RESPONSE"
           echo "Vulnerabilities Table:"
           echo "$VULNS_TABLE"
           set -e
@@ -80,6 +81,7 @@ jobs:
           fi
 
           VULNS_TABLE=$(echo "$RESPONSE" | jq -r '.vulnsTable // "No vulnerabilities found"')
+          echo "$RESPONSE"
           echo "Vulnerabilities Table:"
           echo "$VULNS_TABLE"
           set -e
