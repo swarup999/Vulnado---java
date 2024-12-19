@@ -39,10 +39,75 @@ jobs:
             exit 1
           fi
 
-          VULNS_TABLE=$(echo "$RESPONSE" | jq -r '.vulnsTable // "No vulnerabilities found"')
-          echo "$RESPONSE"
-          echo "Vulnerabilities Table:"
-          echo "$VULNS_TABLE"
+          import React from 'react';
+
+const TravisCIIntegration = () => {
+  return (
+    <div className="p-4">
+      <h3 className="darkText">Travis CI Integration Instructions for SAST and SCA Scans</h3>
+      <hr className="mb-4"/>
+
+      <h4 className="darkText">Step 1: Configure Travis CI</h4>
+      <p className="mb-4">Ensure you have set up the following environment variables in your Travis CI project settings:</p>
+      <ul className="list-disc pl-5 mb-4">
+        <li>INTRUCEPT_CLIENT_ID</li>
+        <li>INTRUCEPT_CLIENT_SECRET</li>
+        <li>INTRUCEPT_APPLICATION_ID</li>
+      </ul>
+
+      <h4 className="darkText">Step 2: Create .travis.yml File</h4>
+      <p className="mb-4">Create a <code className="bg-gray-200 p-1 rounded">.travis.yml</code> file in your project root with the following content:</p>
+      <pre className="bg-gray-100 p-4 rounded overflow-x-auto mb-4">
+        <code>
+{`language: node_js
+node_js:
+  - "16"
+jobs:
+  include:
+    - stage: SAST Check
+      script:
+        - echo "Preparing for SAST Scan...."
+        - zip -r project.zip . -x "**/.git*" "**/.git/**" "**/*node_modules*" "**/*node_modules/**" "**/*.zip" > /dev/null 2>&1
+        - echo "Initiating SAST scan. This may take a few minutes..."
+        - |
+          # Start progress indicator in the background
+          show_progress() {
+            while true; do
+              echo -n "." >&1
+              sleep 1
+            done
+          }
+          show_progress &  # Run the progress function in the background.
+          PROGRESS_PID=$!   # Capture the process ID to stop it later
+        - |
+          set +e
+          RESPONSE=$(curl -s -X POST \\
+            -H "Client-ID: $INTRUCEPT_CLIENT_ID" \\
+            -H "Client-Secret: $INTRUCEPT_CLIENT_SECRET" \\
+            -F "projectZipFile=@project.zip" \\
+            -F "applicationId=$INTRUCEPT_APPLICATION_ID" \\
+            -F "scanName=Java- Vulnado SAST Scan - $TRAVIS_COMMIT" \\
+            https://appsecops-api.intruceptlabs.com/api/v1/integrations/sast-scans)
+          # Stop the progress indicator
+          kill $PROGRESS_PID
+          echo ""  # Move to a new line
+          
+          if [ -z "$RESPONSE" ]; then
+            echo "Error: Empty response received from SAST scan API"
+            exit 1
+          fi
+          
+          # Check for error in response
+          ERROR=$(echo "$RESPONSE" | jq -r '.error // empty')
+          if [ ! -z "$ERROR" ]; then
+            echo "Error: $ERROR"
+            exit 1
+          else
+            VULNS_TABLE=$(echo "$RESPONSE" | jq -r '.vulnsTable')
+            echo "Vulnerabilities Table:"
+            echo "$VULNS_TABLE"
+          fi
+          
           set -e
 
     - stage: SCA Check
@@ -80,8 +145,72 @@ jobs:
             exit 1
           fi
 
-          VULNS_TABLE=$(echo "$RESPONSE" | jq -r '.vulnsTable // "No vulnerabilities found"')
-          echo "$RESPONSE"
-          echo "Vulnerabilities Table:"
-          echo "$VULNS_TABLE"
+          import React from 'react';
+
+const TravisCIIntegration = () => {
+  return (
+    <div className="p-4">
+      <h3 className="darkText">Travis CI Integration Instructions for SAST and SCA Scans</h3>
+      <hr className="mb-4"/>
+
+      <h4 className="darkText">Step 1: Configure Travis CI</h4>
+      <p className="mb-4">Ensure you have set up the following environment variables in your Travis CI project settings:</p>
+      <ul className="list-disc pl-5 mb-4">
+        <li>INTRUCEPT_CLIENT_ID</li>
+        <li>INTRUCEPT_CLIENT_SECRET</li>
+        <li>INTRUCEPT_APPLICATION_ID</li>
+      </ul>
+
+      <h4 className="darkText">Step 2: Create .travis.yml File</h4>
+      <p className="mb-4">Create a <code className="bg-gray-200 p-1 rounded">.travis.yml</code> file in your project root with the following content:</p>
+      <pre className="bg-gray-100 p-4 rounded overflow-x-auto mb-4">
+        <code>
+{`language: node_js
+node_js:
+  - "16"
+jobs:
+  include:
+    - stage: SAST Check
+      script:
+        - echo "Preparing for SAST Scan...."
+        - zip -r project.zip . -x "**/.git*" "**/.git/**" "**/*node_modules*" "**/*node_modules/**" "**/*.zip" > /dev/null 2>&1
+        - echo "Initiating SAST scan. This may take a few minutes..."
+        - |
+          # Start progress indicator in the background
+          show_progress() {
+            while true; do
+              echo -n "." >&1
+              sleep 1
+            done
+          }
+          show_progress &  # Run the progress function in the background.
+          PROGRESS_PID=$!   # Capture the process ID to stop it later
+        - |
+          set +e
+          RESPONSE=$(curl -s -X POST \\
+            -H "Client-ID: $INTRUCEPT_CLIENT_ID" \\
+            -H "Client-Secret: $INTRUCEPT_CLIENT_SECRET" \\
+            -F "projectZipFile=@project.zip" \\
+            -F "applicationId=$INTRUCEPT_APPLICATION_ID" \\
+            -F "scanName=Java- Vulnado SAST Scan - $TRAVIS_COMMIT" \\
+            https://appsecops-api.intruceptlabs.com/api/v1/integrations/sast-scans)
+          # Stop the progress indicator
+          kill $PROGRESS_PID
+          echo ""  # Move to a new line
+          
+          if [ -z "$RESPONSE" ]; then
+            echo "Error: Empty response received from SAST scan API"
+            exit 1
+          fi
+          
+          # Check for error in response
+          ERROR=$(echo "$RESPONSE" | jq -r '.error // empty')
+          if [ ! -z "$ERROR" ]; then
+            echo "Error: $ERROR"
+            exit 1
+          else
+            VULNS_TABLE=$(echo "$RESPONSE" | jq -r '.vulnsTable')
+            echo "Vulnerabilities Table:"
+            echo "$VULNS_TABLE"
+          fi
           set -e
