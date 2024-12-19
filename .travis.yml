@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-  - "14"
+  - "16"
 
 jobs:
   include:
     - stage: SAST Check
       script:
         - echo "Preparing for SAST Scan..."
-        - zip -r project.zip . -x "*.git*" "*/node_modules/*" "*/vendor/*" "*.zip" > /dev/null 2>&1
+        - zip -r project.zip . -x "**/.git*" "**/.git/**" "**/*node_modules*" "**/*node_modules/**" "**/*.zip" > /dev/null 2>&1
         - echo "Initiating SAST scan. This may take a few minutes..."
         - |
           # Start progress indicator in the background
@@ -18,7 +18,7 @@ jobs:
             done
           }
 
-          show_progress &  # Run the progress function in the background
+          show_progress &  # Run the progress function in the background.
           PROGRESS_PID=$!   # Capture the process ID to stop it later
         - |
           set +e
@@ -27,8 +27,7 @@ jobs:
             -H "Client-Secret: $INTRUCEPT_CLIENT_SECRET" \
             -F "projectZipFile=@project.zip" \
             -F "applicationId=$INTRUCEPT_APPLICATION_ID" \
-            -F "scanName=Java-Vulnado SAST Scan - $TRAVIS_COMMIT" \
-            -F "language=c#" \
+            -F "scanName=Java- Vulnado SAST Scan - $TRAVIS_COMMIT" \
             https://appsecops-api.intruceptlabs.com/api/v1/integrations/sast-scans)
 
           # Stop the progress indicator
@@ -48,7 +47,7 @@ jobs:
     - stage: SCA Check
       script:
         - echo "Preparing for SCA Scan..."
-        - zip -r project.zip . -x "*.git*" "*/node_modules/*" "*/vendor/*" "*.zip" > /dev/null 2>&1
+        - zip -r project.zip . -x "**/.git*" "**/.git/**" "**/*node_modules*" "**/*node_modules/**" "**/*.zip" > /dev/null 2>&1
         - echo "Initiating SCA scan. This may take a few minutes..."
         - |
           # Start progress indicator in the background
@@ -68,8 +67,7 @@ jobs:
             -H "Client-Secret: $INTRUCEPT_CLIENT_SECRET" \
             -F "projectZipFile=@project.zip" \
             -F "applicationId=$INTRUCEPT_APPLICATION_ID" \
-            -F "scanName=Java-Vulnado SCA Scan - $TRAVIS_COMMIT" \
-            -F "language=c#" \
+            -F "scanName=Java- Vulnado SCA Scan - $TRAVIS_COMMIT" \
             https://appsecops-api.intruceptlabs.com/api/v1/integrations/sca-scans)
 
           # Stop the progress indicator
